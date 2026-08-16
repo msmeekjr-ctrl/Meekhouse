@@ -1,81 +1,70 @@
 # Meekhouse Finishes Tracker
 
-A simple, free static website to organize and track all the final finishes for your new home build.
+A simple website to organize and track all the final finishes for your new home build.
 
-**Live site:** Once GitHub Pages is enabled → `https://msmeekjr-ctrl.github.io/Meekhouse/`
+**Recommended hosting:** Netlify (gives you a real one-click Save button)
 
-## What’s included
+## Features
 
-- Pre-loaded rooms: 4 Bedrooms, 4 Bathrooms, Bonus, Living, Dining, Kitchen, Office, Garage
-- Default finishes for each room type (paint colors, tile, vanities, lighting, etc.)
-- Add / edit / delete rooms and any custom finishes
-- Status tracking: Pending → Picked → Ordered → Installed
-- Image support via Google Drive links
-- Search & filter
-- Progress overview
-- Export / Import JSON
-- **Secure one-click update via GitHub Action** (no tokens in the website)
+- Pre-loaded rooms (bedrooms, bathrooms, kitchen, living, dining, office, garage, bonus)
+- Custom finishes per room
+- Status tracking (Pending → Picked → Ordered → Installed)
+- Google Drive image support
+- One-click **Save to GitHub** (when hosted on Netlify)
+- Export / Import JSON for backups
 
-## Quick start (GitHub Pages)
+---
 
-1. This repository already contains `index.html` and `data.json`.
-2. Go to the repo **Settings → Pages**.
-3. Under **Source**, choose **Deploy from a branch**.
-4. Select branch **main** and folder **/ (root)**.
-5. Click Save. After a minute the site will be live.
+## Deploy on Netlify (recommended)
 
-## How to update your data (recommended method)
+### 1. Connect the repo
+1. Go to [https://app.netlify.com](https://app.netlify.com)
+2. Click **Add new site** → **Import an existing project**
+3. Choose **GitHub** and select the `Meekhouse` repository
+4. Leave the build settings as defaults (it will use `netlify.toml`)
+5. Click **Deploy site**
 
-Because this is a free static site, permanent changes go through `data.json`. The safest way is the GitHub Action:
+### 2. Add the GitHub token as a secret
+1. In Netlify go to **Site configuration** → **Environment variables**
+2. Click **Add a variable**
+3. Key: `GITHUB_TOKEN`
+4. Value: paste your **fine-grained personal access token**
+   - The token only needs access to the `Meekhouse` repository
+   - Permission required: **Contents → Read and write**
+5. Save
 
-### Using the GitHub Action (recommended)
+### 3. Redeploy
+After adding the environment variable, trigger a new deploy (Deploys → Trigger deploy → Deploy site).
 
-1. Make your edits in the live website.
-2. Click **Export JSON** and open the downloaded file (or just copy its contents).
-3. Go to the repository → **Actions** tab.
-4. In the left sidebar click **Update data.json**.
-5. Click the **Run workflow** button.
-6. Paste the entire contents of your exported `data.json` into the input box.
-7. Click **Run workflow**.
-8. Wait ~20–30 seconds. The Action will validate the JSON, update the file, and push it to `main`.
-9. Refresh the live site — your changes are now live.
+Your site will now have a working green **Save to GitHub** button.
 
-No personal access token is stored anywhere in the website or in the repository. The Action uses GitHub’s built-in token with only the permissions it needs.
+---
 
-### Alternative: Manual file replace
+## How the Save button works
 
-1. Export JSON from the site.
-2. In the repo, replace the existing `data.json` with the new file.
-3. Commit and push.
+- The browser sends the current data to a Netlify Function
+- The function (running on Netlify’s servers) uses the secret `GITHUB_TOKEN`
+- It updates `data.json` in your GitHub repository
+- The token never leaves Netlify’s servers and is never visible in the browser
 
-You can also keep the exported file as a local backup and re-import it anytime with the **Import JSON** button.
-
-## Google Drive images
-
-Recommended account: `meekhouse11460@gmail.com`
-
-1. Upload the photo to Google Drive.
-2. Right-click → **Share** → set General access to **Anyone with the link**.
-3. Copy the link.
-4. Paste it into the Image URLs field when editing a finish.
-5. The site automatically converts most Drive share links into viewable images.
-
-Tip: You can paste multiple image links (one per line).
+---
 
 ## Local development
 
-Just open `index.html` in a browser, or serve the folder with any static server:
-
 ```bash
-npx serve .
+npm install
+npx netlify dev
 ```
 
-## Tech
+---
 
-- Pure HTML + Tailwind CSS (CDN) + Alpine.js
-- No build step, no backend, works on free GitHub Pages
-- All data lives in `data.json`
-- Updates via GitHub Actions (`workflow_dispatch`)
+## Google Drive images
+
+Use the account `meekhouse11460@gmail.com`.
+
+1. Upload photo → Share → “Anyone with the link”
+2. Paste the link into a finish
+3. The site converts it automatically so the image displays
 
 ---
 
