@@ -1,0 +1,663 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Meekhouse Finishes Tracker</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    body { font-family: 'Inter', system-ui, sans-serif; }
+    [x-cloak] { display: none !important; }
+    .status-pending { @apply bg-amber-100 text-amber-800; }
+    .status-picked { @apply bg-emerald-100 text-emerald-800; }
+    .status-ordered { @apply bg-blue-100 text-blue-800; }
+    .status-installed { @apply bg-purple-100 text-purple-800; }
+  </style>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              50: '#f8f6f3',
+              100: '#efeae3',
+              200: '#ddd2c3',
+              500: '#8b7355',
+              600: '#6f5a42',
+              700: '#5a4a37',
+              800: '#4a3d2f',
+              900: '#3d3328'
+            }
+          }
+        }
+      }
+    }
+  </script>
+</head>
+<body class="bg-brand-50 text-gray-800 min-h-screen" x-data="app()" x-init="init()" x-cloak>
+  <!-- Header -->
+  <header class="bg-white border-b border-brand-200 sticky top-0 z-40 shadow-sm">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 py-4 flex flex-wrap items-center justify-between gap-3">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-lg bg-brand-600 text-white flex items-center justify-center font-bold text-lg">M</div>
+        <div>
+          <h1 class="text-xl font-bold text-brand-900 leading-tight">Meekhouse</h1>
+          <p class="text-xs text-brand-500">Finishes Tracker</p>
+        </div>
+      </div>
+      <div class="flex flex-wrap items-center gap-2">
+        <button @click="showImport = true" class="px-3 py-1.5 text-sm rounded-lg border border-brand-200 hover:bg-brand-50 transition">
+          Import JSON
+        </button>
+        <button @click="exportJSON()" class="px-3 py-1.5 text-sm rounded-lg border border-brand-200 hover:bg-brand-50 transition">
+          Export JSON
+        </button>
+        <button @click="showHelp = true" class="px-3 py-1.5 text-sm rounded-lg bg-brand-600 text-white hover:bg-brand-700 transition">
+          How to use
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 py-8">
+    <!-- Stats bar -->
+    <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-8">
+      <div class="bg-white rounded-xl p-4 border border-brand-100 shadow-sm">
+        <p class="text-sm text-brand-500">Rooms</p>
+        <p class="text-2xl font-bold text-brand-900" x-text="data.rooms.length"></p>
+      </div>
+      <div class="bg-white rounded-xl p-4 border border-brand-100 shadow-sm">
+        <p class="text-sm text-brand-500">Total Finishes</p>
+        <p class="text-2xl font-bold text-brand-900" x-text="totalFinishes"></p>
+      </div>
+      <div class="bg-white rounded-xl p-4 border border-brand-100 shadow-sm">
+        <p class="text-sm text-brand-500">Picked</p>
+        <p class="text-2xl font-bold text-emerald-600" x-text="pickedCount"></p>
+      </div>
+      <div class="bg-white rounded-xl p-4 border border-brand-100 shadow-sm">
+        <p class="text-sm text-brand-500">Progress</p>
+        <p class="text-2xl font-bold text-brand-900" x-text="progressPercent + '%'"></p>
+      </div>
+    </div>
+
+    <!-- Toolbar -->
+    <div class="flex flex-wrap items-center justify-between gap-4 mb-6">
+      <div class="flex items-center gap-2">
+        <input type="search" x-model="search" placeholder="Search rooms or finishes..." 
+               class="px-4 py-2 rounded-lg border border-brand-200 focus:outline-none focus:ring-2 focus:ring-brand-500 w-64 text-sm">
+        <select x-model="statusFilter" class="px-3 py-2 rounded-lg border border-brand-200 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500">
+          <option value="">All statuses</option>
+          <option value="pending">Pending</option>
+          <option value="picked">Picked</option>
+          <option value="ordered">Ordered</option>
+          <option value="installed">Installed</option>
+        </select>
+      </div>
+      <button @click="openAddRoom()" class="px-4 py-2 bg-brand-600 text-white rounded-lg hover:bg-brand-700 transition text-sm font-medium flex items-center gap-2">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+        Add Room
+      </button>
+    </div>
+
+    <!-- Rooms Grid -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5" x-show="!selectedRoom">
+      <template x-for="room in filteredRooms" :key="room.id">
+        <div @click="selectRoom(room)" 
+             class="bg-white rounded-xl border border-brand-100 shadow-sm hover:shadow-md hover:border-brand-300 transition cursor-pointer overflow-hidden group">
+          <div class="p-5">
+            <div class="flex items-start justify-between mb-3">
+              <div>
+                <h2 class="font-semibold text-lg text-brand-900 group-hover:text-brand-600 transition" x-text="room.name"></h2>
+                <p class="text-xs text-brand-500 capitalize mt-0.5" x-text="room.type"></p>
+              </div>
+              <span class="text-xs font-medium px-2 py-1 rounded-full"
+                    :class="roomProgress(room) === 100 ? 'bg-emerald-100 text-emerald-700' : 'bg-brand-100 text-brand-700'"
+                    x-text="roomProgress(room) + '%'"></span>
+            </div>
+            <div class="w-full bg-brand-100 rounded-full h-2 mb-3">
+              <div class="bg-brand-600 h-2 rounded-full transition-all" :style="`width: ${roomProgress(room)}%`"></div>
+            </div>
+            <p class="text-sm text-gray-500">
+              <span x-text="pickedInRoom(room)"></span> of <span x-text="room.finishes.length"></span> finishes picked
+            </p>
+          </div>
+        </div>
+      </template>
+    </div>
+
+    <!-- Room Detail -->
+    <div x-show="selectedRoom" x-transition>
+      <button @click="selectedRoom = null" class="mb-4 text-sm text-brand-600 hover:text-brand-800 flex items-center gap-1">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+        Back to rooms
+      </button>
+
+      <div class="bg-white rounded-xl border border-brand-100 shadow-sm p-6 mb-6">
+        <div class="flex flex-wrap items-start justify-between gap-4">
+          <div>
+            <h2 class="text-2xl font-bold text-brand-900" x-text="selectedRoom?.name"></h2>
+            <p class="text-sm text-brand-500 capitalize mt-1" x-text="selectedRoom?.type + ' room'"></p>
+          </div>
+          <div class="flex gap-2">
+            <button @click="openEditRoom()" class="px-3 py-1.5 text-sm border border-brand-200 rounded-lg hover:bg-brand-50">Edit Room</button>
+            <button @click="openAddFinish()" class="px-3 py-1.5 text-sm bg-brand-600 text-white rounded-lg hover:bg-brand-700">+ Add Finish</button>
+          </div>
+        </div>
+        <div class="mt-4" x-show="selectedRoom?.notes">
+          <p class="text-sm text-gray-600" x-text="selectedRoom?.notes"></p>
+        </div>
+      </div>
+
+      <!-- Finishes Grid -->
+      <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+        <template x-for="finish in filteredFinishes" :key="finish.id">
+          <div class="bg-white rounded-xl border border-brand-100 shadow-sm overflow-hidden flex flex-col">
+            <!-- Image -->
+            <div class="h-40 bg-brand-100 relative flex items-center justify-center overflow-hidden">
+              <template x-if="finish.images && finish.images.length">
+                <img :src="toImageUrl(finish.images[0])" :alt="finish.name" class="w-full h-full object-cover" @error="$el.src=''; $el.classList.add('hidden')">
+              </template>
+              <template x-if="!finish.images || !finish.images.length">
+                <div class="text-brand-400 text-sm flex flex-col items-center gap-1">
+                  <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                  No image
+                </div>
+              </template>
+              <span class="absolute top-2 right-2 text-xs font-medium px-2 py-0.5 rounded-full capitalize"
+                    :class="{
+                      'bg-amber-100 text-amber-800': finish.status === 'pending',
+                      'bg-emerald-100 text-emerald-800': finish.status === 'picked',
+                      'bg-blue-100 text-blue-800': finish.status === 'ordered',
+                      'bg-purple-100 text-purple-800': finish.status === 'installed'
+                    }"
+                    x-text="finish.status"></span>
+            </div>
+            <div class="p-4 flex-1 flex flex-col">
+              <h3 class="font-semibold text-brand-900" x-text="finish.name"></h3>
+              <p class="text-xs text-brand-500 capitalize mb-2" x-text="finish.category"></p>
+              <p class="text-sm text-gray-700 mb-1 line-clamp-2" x-text="finish.value || '—'"></p>
+              <p class="text-xs text-gray-500 line-clamp-2 mb-3" x-show="finish.notes" x-text="finish.notes"></p>
+              <div class="mt-auto pt-2 flex gap-2">
+                <button @click="openEditFinish(finish)" class="flex-1 text-sm py-1.5 border border-brand-200 rounded-lg hover:bg-brand-50 transition">Edit</button>
+                <button @click="deleteFinish(finish)" class="px-3 py-1.5 text-sm text-red-600 border border-red-200 rounded-lg hover:bg-red-50 transition">Delete</button>
+              </div>
+            </div>
+          </div>
+        </template>
+      </div>
+      <p x-show="filteredFinishes.length === 0" class="text-center text-gray-500 py-12">No finishes match the current filter.</p>
+    </div>
+  </main>
+
+  <!-- Add / Edit Room Modal -->
+  <div x-show="showRoomModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40" x-transition.opacity>
+    <div class="bg-white rounded-2xl shadow-xl w-full max-w-md p-6" @click.outside="showRoomModal = false">
+      <h3 class="text-lg font-bold text-brand-900 mb-4" x-text="editingRoom ? 'Edit Room' : 'Add Room'"></h3>
+      <div class="space-y-4">
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Room Name</label>
+          <input type="text" x-model="roomForm.name" class="w-full px-3 py-2 border border-brand-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-500">
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Type</label>
+          <select x-model="roomForm.type" class="w-full px-3 py-2 border border-brand-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-500">
+            <option value="bedroom">Bedroom</option>
+            <option value="bathroom">Bathroom</option>
+            <option value="kitchen">Kitchen</option>
+            <option value="living">Living</option>
+            <option value="dining">Dining</option>
+            <option value="office">Office</option>
+            <option value="bonus">Bonus</option>
+            <option value="garage">Garage</option>
+            <option value="other">Other</option>
+          </select>
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Notes</label>
+          <textarea x-model="roomForm.notes" rows="2" class="w-full px-3 py-2 border border-brand-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-500"></textarea>
+        </div>
+        <div x-show="!editingRoom" class="flex items-center gap-2">
+          <input type="checkbox" id="applyTemplate" x-model="roomForm.applyTemplate" class="rounded border-brand-300 text-brand-600 focus:ring-brand-500">
+          <label for="applyTemplate" class="text-sm text-gray-700">Apply default finishes for this room type</label>
+        </div>
+      </div>
+      <div class="mt-6 flex justify-end gap-2">
+        <button @click="showRoomModal = false" class="px-4 py-2 text-sm border border-brand-200 rounded-lg hover:bg-brand-50">Cancel</button>
+        <button @click="saveRoom()" class="px-4 py-2 text-sm bg-brand-600 text-white rounded-lg hover:bg-brand-700">Save</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Add / Edit Finish Modal -->
+  <div x-show="showFinishModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40" x-transition.opacity>
+    <div class="bg-white rounded-2xl shadow-xl w-full max-w-lg max-h-[90vh] overflow-y-auto p-6" @click.outside="showFinishModal = false">
+      <h3 class="text-lg font-bold text-brand-900 mb-4" x-text="editingFinish ? 'Edit Finish' : 'Add Finish'"></h3>
+      <div class="space-y-4">
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Finish Name *</label>
+          <input type="text" x-model="finishForm.name" placeholder="e.g. Wall Paint, Floor Tile" class="w-full px-3 py-2 border border-brand-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-500">
+        </div>
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Category</label>
+            <select x-model="finishForm.category" class="w-full px-3 py-2 border border-brand-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-500">
+              <option value="paint">Paint</option>
+              <option value="tile">Tile</option>
+              <option value="flooring">Flooring</option>
+              <option value="cabinet">Cabinet</option>
+              <option value="surface">Surface / Counter</option>
+              <option value="lighting">Lighting</option>
+              <option value="plumbing">Plumbing</option>
+              <option value="hardware">Hardware</option>
+              <option value="fixture">Fixture</option>
+              <option value="appliance">Appliance</option>
+              <option value="feature">Feature</option>
+              <option value="other">Other</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Status</label>
+            <select x-model="finishForm.status" class="w-full px-3 py-2 border border-brand-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-500">
+              <option value="pending">Pending</option>
+              <option value="picked">Picked</option>
+              <option value="ordered">Ordered</option>
+              <option value="installed">Installed</option>
+            </select>
+          </div>
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Selection / Value</label>
+          <input type="text" x-model="finishForm.value" placeholder="Brand, color name, SKU, etc." class="w-full px-3 py-2 border border-brand-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-500">
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Notes</label>
+          <textarea x-model="finishForm.notes" rows="2" placeholder="Store location, price, alternate options..." class="w-full px-3 py-2 border border-brand-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-500"></textarea>
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Image URLs (Google Drive)</label>
+          <p class="text-xs text-gray-500 mb-2">Paste one URL per line. Use “Anyone with the link” sharing. The app will try to convert Drive links automatically.</p>
+          <textarea x-model="finishForm.imagesText" rows="3" placeholder="https://drive.google.com/file/d/..." class="w-full px-3 py-2 border border-brand-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-500 font-mono text-sm"></textarea>
+        </div>
+        <!-- Preview -->
+        <div x-show="finishForm.imagesText.trim()" class="flex flex-wrap gap-2">
+          <template x-for="(url, i) in previewImages" :key="i">
+            <img :src="toImageUrl(url)" class="w-20 h-20 object-cover rounded-lg border" @error="$el.style.display='none'">
+          </template>
+        </div>
+      </div>
+      <div class="mt-6 flex justify-end gap-2">
+        <button @click="showFinishModal = false" class="px-4 py-2 text-sm border border-brand-200 rounded-lg hover:bg-brand-50">Cancel</button>
+        <button @click="saveFinish()" class="px-4 py-2 text-sm bg-brand-600 text-white rounded-lg hover:bg-brand-700">Save Finish</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Import Modal -->
+  <div x-show="showImport" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40" x-transition.opacity>
+    <div class="bg-white rounded-2xl shadow-xl w-full max-w-md p-6" @click.outside="showImport = false">
+      <h3 class="text-lg font-bold text-brand-900 mb-2">Import data.json</h3>
+      <p class="text-sm text-gray-600 mb-4">Paste the contents of your data.json file below, or select a file.</p>
+      <input type="file" accept=".json,application/json" @change="handleFileImport($event)" class="mb-3 text-sm">
+      <textarea x-model="importText" rows="8" class="w-full px-3 py-2 border border-brand-200 rounded-lg font-mono text-xs focus:outline-none focus:ring-2 focus:ring-brand-500" placeholder='{"rooms": [...]}'></textarea>
+      <div class="mt-4 flex justify-end gap-2">
+        <button @click="showImport = false" class="px-4 py-2 text-sm border border-brand-200 rounded-lg">Cancel</button>
+        <button @click="doImport()" class="px-4 py-2 text-sm bg-brand-600 text-white rounded-lg hover:bg-brand-700">Import</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Help Modal -->
+  <div x-show="showHelp" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40" x-transition.opacity>
+    <div class="bg-white rounded-2xl shadow-xl w-full max-w-lg max-h-[90vh] overflow-y-auto p-6" @click.outside="showHelp = false">
+      <h3 class="text-lg font-bold text-brand-900 mb-4">How to use Meekhouse Tracker</h3>
+      <div class="space-y-4 text-sm text-gray-700">
+        <div>
+          <h4 class="font-semibold text-brand-800">1. Editing finishes</h4>
+          <p>Click any room → click <strong>Edit</strong> on a finish card. Fill in the selection, change status, and add image links.</p>
+        </div>
+        <div>
+          <h4 class="font-semibold text-brand-800">2. Adding custom finishes</h4>
+          <p>Inside a room click <strong>+ Add Finish</strong>. You can add any extra items (e.g. wallpaper, special trim, etc.).</p>
+        </div>
+        <div>
+          <h4 class="font-semibold text-brand-800">3. Google Drive images</h4>
+          <ol class="list-decimal ml-5 space-y-1 mt-1">
+            <li>Upload photo to Google Drive (account: meekhouse11460@gmail.com recommended).</li>
+            <li>Right-click → Share → set to “Anyone with the link”.</li>
+            <li>Copy the link and paste it into the Image URLs box.</li>
+            <li>The app automatically converts most Drive links so the image displays.</li>
+          </ol>
+        </div>
+        <div>
+          <h4 class="font-semibold text-brand-800">4. Saving your work permanently</h4>
+          <p>This is a static GitHub Pages site. Changes live in your browser until you export:</p>
+          <ol class="list-decimal ml-5 space-y-1 mt-1">
+            <li>Click <strong>Export JSON</strong> — downloads an updated <code>data.json</code>.</li>
+            <li>Replace the <code>data.json</code> file in this GitHub repository with the new one.</li>
+            <li>Commit & push. Refresh the live site and your data is updated for everyone.</li>
+          </ol>
+          <p class="mt-2 text-xs text-gray-500">You can also keep a local copy and re-import anytime.</p>
+        </div>
+        <div>
+          <h4 class="font-semibold text-brand-800">5. GitHub Pages</h4>
+          <p>If the site isn’t live yet: Repo → Settings → Pages → Source: Deploy from a branch → Branch: <code>main</code> / root → Save.</p>
+        </div>
+      </div>
+      <div class="mt-6 flex justify-end">
+        <button @click="showHelp = false" class="px-4 py-2 text-sm bg-brand-600 text-white rounded-lg hover:bg-brand-700">Got it</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast -->
+  <div x-show="toast" x-transition.opacity class="fixed bottom-6 right-6 bg-brand-800 text-white px-5 py-3 rounded-xl shadow-lg text-sm z-50" x-text="toast"></div>
+
+  <script>
+    function app() {
+      return {
+        data: { rooms: [] },
+        selectedRoom: null,
+        search: '',
+        statusFilter: '',
+        showRoomModal: false,
+        showFinishModal: false,
+        showImport: false,
+        showHelp: false,
+        editingRoom: null,
+        editingFinish: null,
+        roomForm: { name: '', type: 'bedroom', notes: '', applyTemplate: true },
+        finishForm: { name: '', category: 'paint', value: '', notes: '', status: 'pending', imagesText: '' },
+        importText: '',
+        toast: '',
+        toastTimer: null,
+
+        async init() {
+          try {
+            const res = await fetch('data.json?t=' + Date.now());
+            if (res.ok) {
+              this.data = await res.json();
+            } else {
+              this.showToast('Could not load data.json');
+            }
+          } catch (e) {
+            this.showToast('Running offline – start with empty data or import');
+            this.data = { rooms: [] };
+          }
+          // Persist to localStorage as backup
+          this.$watch('data', (val) => {
+            localStorage.setItem('meekhouse-data', JSON.stringify(val));
+          }, { deep: true });
+        },
+
+        get totalFinishes() {
+          return this.data.rooms.reduce((sum, r) => sum + r.finishes.length, 0);
+        },
+        get pickedCount() {
+          return this.data.rooms.reduce((sum, r) => sum + r.finishes.filter(f => f.status !== 'pending').length, 0);
+        },
+        get progressPercent() {
+          if (this.totalFinishes === 0) return 0;
+          return Math.round((this.pickedCount / this.totalFinishes) * 100);
+        },
+        get filteredRooms() {
+          const q = this.search.toLowerCase().trim();
+          return this.data.rooms.filter(room => {
+            if (!q) return true;
+            if (room.name.toLowerCase().includes(q)) return true;
+            return room.finishes.some(f => f.name.toLowerCase().includes(q) || (f.value || '').toLowerCase().includes(q));
+          });
+        },
+        get filteredFinishes() {
+          if (!this.selectedRoom) return [];
+          let list = this.selectedRoom.finishes;
+          if (this.statusFilter) {
+            list = list.filter(f => f.status === this.statusFilter);
+          }
+          const q = this.search.toLowerCase().trim();
+          if (q) {
+            list = list.filter(f => f.name.toLowerCase().includes(q) || (f.value || '').toLowerCase().includes(q) || (f.notes || '').toLowerCase().includes(q));
+          }
+          return list;
+        },
+        get previewImages() {
+          return this.finishForm.imagesText.split('\n').map(s => s.trim()).filter(Boolean);
+        },
+
+        roomProgress(room) {
+          if (!room.finishes.length) return 0;
+          const done = room.finishes.filter(f => f.status !== 'pending').length;
+          return Math.round((done / room.finishes.length) * 100);
+        },
+        pickedInRoom(room) {
+          return room.finishes.filter(f => f.status !== 'pending').length;
+        },
+
+        selectRoom(room) {
+          this.selectedRoom = room;
+          this.search = '';
+          this.statusFilter = '';
+        },
+
+        // Room CRUD
+        openAddRoom() {
+          this.editingRoom = null;
+          this.roomForm = { name: '', type: 'bedroom', notes: '', applyTemplate: true };
+          this.showRoomModal = true;
+        },
+        openEditRoom() {
+          this.editingRoom = this.selectedRoom;
+          this.roomForm = {
+            name: this.selectedRoom.name,
+            type: this.selectedRoom.type,
+            notes: this.selectedRoom.notes || '',
+            applyTemplate: false
+          };
+          this.showRoomModal = true;
+        },
+        saveRoom() {
+          if (!this.roomForm.name.trim()) {
+            this.showToast('Room name is required');
+            return;
+          }
+          if (this.editingRoom) {
+            this.editingRoom.name = this.roomForm.name.trim();
+            this.editingRoom.type = this.roomForm.type;
+            this.editingRoom.notes = this.roomForm.notes;
+          } else {
+            const id = this.slug(this.roomForm.name) + '-' + Date.now().toString(36);
+            const finishes = this.roomForm.applyTemplate ? this.getTemplate(this.roomForm.type) : [];
+            this.data.rooms.push({
+              id,
+              name: this.roomForm.name.trim(),
+              type: this.roomForm.type,
+              notes: this.roomForm.notes,
+              finishes
+            });
+          }
+          this.showRoomModal = false;
+          this.showToast('Room saved');
+        },
+
+        // Finish CRUD
+        openAddFinish() {
+          this.editingFinish = null;
+          this.finishForm = { name: '', category: 'paint', value: '', notes: '', status: 'pending', imagesText: '' };
+          this.showFinishModal = true;
+        },
+        openEditFinish(finish) {
+          this.editingFinish = finish;
+          this.finishForm = {
+            name: finish.name,
+            category: finish.category || 'other',
+            value: finish.value || '',
+            notes: finish.notes || '',
+            status: finish.status || 'pending',
+            imagesText: (finish.images || []).join('\n')
+          };
+          this.showFinishModal = true;
+        },
+        saveFinish() {
+          if (!this.finishForm.name.trim()) {
+            this.showToast('Finish name is required');
+            return;
+          }
+          const images = this.finishForm.imagesText.split('\n').map(s => s.trim()).filter(Boolean);
+          if (this.editingFinish) {
+            Object.assign(this.editingFinish, {
+              name: this.finishForm.name.trim(),
+              category: this.finishForm.category,
+              value: this.finishForm.value,
+              notes: this.finishForm.notes,
+              status: this.finishForm.status,
+              images
+            });
+          } else {
+            this.selectedRoom.finishes.push({
+              id: this.slug(this.finishForm.name) + '-' + Date.now().toString(36),
+              name: this.finishForm.name.trim(),
+              category: this.finishForm.category,
+              value: this.finishForm.value,
+              notes: this.finishForm.notes,
+              status: this.finishForm.status,
+              images
+            });
+          }
+          this.showFinishModal = false;
+          this.showToast('Finish saved');
+        },
+        deleteFinish(finish) {
+          if (!confirm(`Delete “${finish.name}”?`)) return;
+          const idx = this.selectedRoom.finishes.findIndex(f => f.id === finish.id);
+          if (idx > -1) this.selectedRoom.finishes.splice(idx, 1);
+          this.showToast('Finish deleted');
+        },
+
+        // Helpers
+        slug(str) {
+          return str.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+        },
+        toImageUrl(url) {
+          if (!url) return '';
+          // Convert Google Drive share links to direct view links
+          const match = url.match(/\/file\/d\/([a-zA-Z0-9_-]+)/) || url.match(/[?&]id=([a-zA-Z0-9_-]+)/);
+          if (match) {
+            return `https://drive.google.com/uc?export=view&id=${match[1]}`;
+          }
+          // Also handle open?id= style
+          const openMatch = url.match(/open\?id=([a-zA-Z0-9_-]+)/);
+          if (openMatch) {
+            return `https://drive.google.com/uc?export=view&id=${openMatch[1]}`;
+          }
+          return url;
+        },
+        getTemplate(type) {
+          const common = [
+            { id: 'wall-paint', name: 'Wall Paint', category: 'paint' },
+            { id: 'trim-paint', name: 'Trim Paint', category: 'paint' },
+            { id: 'ceiling-paint', name: 'Ceiling Paint', category: 'paint' }
+          ];
+          const templates = {
+            bedroom: [...common,
+              { id: 'flooring', name: 'Flooring', category: 'flooring' },
+              { id: 'lighting', name: 'Lighting', category: 'lighting' },
+              { id: 'hardware', name: 'Door Hardware', category: 'hardware' }
+            ],
+            bathroom: [...common,
+              { id: 'floor-tile', name: 'Floor Tile', category: 'tile' },
+              { id: 'shower-tile', name: 'Shower Tile / Surround', category: 'tile' },
+              { id: 'vanity', name: 'Vanity', category: 'cabinet' },
+              { id: 'vanity-top', name: 'Vanity Top', category: 'surface' },
+              { id: 'mirror', name: 'Mirror', category: 'fixture' },
+              { id: 'lighting', name: 'Lighting', category: 'lighting' },
+              { id: 'faucet', name: 'Faucet', category: 'plumbing' },
+              { id: 'toilet', name: 'Toilet', category: 'plumbing' },
+              { id: 'hardware', name: 'Hardware', category: 'hardware' }
+            ],
+            kitchen: [...common,
+              { id: 'cabinets', name: 'Cabinets', category: 'cabinet' },
+              { id: 'countertops', name: 'Countertops', category: 'surface' },
+              { id: 'backsplash', name: 'Backsplash', category: 'tile' },
+              { id: 'flooring', name: 'Flooring', category: 'flooring' },
+              { id: 'sink-faucet', name: 'Sink & Faucet', category: 'plumbing' },
+              { id: 'lighting', name: 'Lighting', category: 'lighting' },
+              { id: 'hardware', name: 'Cabinet Hardware', category: 'hardware' }
+            ],
+            living: [...common,
+              { id: 'flooring', name: 'Flooring', category: 'flooring' },
+              { id: 'lighting', name: 'Lighting', category: 'lighting' }
+            ],
+            dining: [...common,
+              { id: 'flooring', name: 'Flooring', category: 'flooring' },
+              { id: 'lighting', name: 'Lighting', category: 'lighting' }
+            ],
+            office: [...common,
+              { id: 'flooring', name: 'Flooring', category: 'flooring' },
+              { id: 'lighting', name: 'Lighting', category: 'lighting' }
+            ],
+            bonus: [...common,
+              { id: 'flooring', name: 'Flooring', category: 'flooring' },
+              { id: 'lighting', name: 'Lighting', category: 'lighting' }
+            ],
+            garage: [
+              { id: 'wall-paint', name: 'Wall Paint / Finish', category: 'paint' },
+              { id: 'flooring', name: 'Floor Coating', category: 'flooring' },
+              { id: 'lighting', name: 'Lighting', category: 'lighting' }
+            ]
+          };
+          const list = templates[type] || common;
+          return list.map(item => ({
+            ...item,
+            id: item.id + '-' + Date.now().toString(36) + Math.random().toString(36).slice(2, 5),
+            value: '',
+            notes: '',
+            status: 'pending',
+            images: []
+          }));
+        },
+
+        exportJSON() {
+          const blob = new Blob([JSON.stringify(this.data, null, 2)], { type: 'application/json' });
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = 'data.json';
+          a.click();
+          URL.revokeObjectURL(url);
+          this.showToast('data.json downloaded – replace the file in your GitHub repo');
+        },
+        handleFileImport(e) {
+          const file = e.target.files[0];
+          if (!file) return;
+          const reader = new FileReader();
+          reader.onload = (ev) => {
+            this.importText = ev.target.result;
+          };
+          reader.readAsText(file);
+        },
+        doImport() {
+          try {
+            const parsed = JSON.parse(this.importText);
+            if (!parsed.rooms || !Array.isArray(parsed.rooms)) throw new Error('Invalid format');
+            this.data = parsed;
+            this.selectedRoom = null;
+            this.showImport = false;
+            this.importText = '';
+            this.showToast('Data imported successfully');
+          } catch (err) {
+            this.showToast('Invalid JSON: ' + err.message);
+          }
+        },
+        showToast(msg) {
+          this.toast = msg;
+          clearTimeout(this.toastTimer);
+          this.toastTimer = setTimeout(() => this.toast = '', 3500);
+        }
+      }
+    }
+  </script>
+</body>
+</html>
