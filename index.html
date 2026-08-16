@@ -12,10 +12,6 @@
   <style>
     body { font-family: 'Inter', system-ui, sans-serif; }
     [x-cloak] { display: none !important; }
-    .status-pending { @apply bg-amber-100 text-amber-800; }
-    .status-picked { @apply bg-emerald-100 text-emerald-800; }
-    .status-ordered { @apply bg-blue-100 text-blue-800; }
-    .status-installed { @apply bg-purple-100 text-purple-800; }
   </style>
   <script>
     tailwind.config = {
@@ -50,21 +46,14 @@
         </div>
       </div>
       <div class="flex flex-wrap items-center gap-2">
-        <button @click="showImport = true" class="px-3 py-1.5 text-sm rounded-lg border border-brand-200 hover:bg-brand-50 transition">
-          Import JSON
-        </button>
-        <button @click="exportJSON()" class="px-3 py-1.5 text-sm rounded-lg border border-brand-200 hover:bg-brand-50 transition">
-          Export JSON
-        </button>
-        <button @click="showHelp = true" class="px-3 py-1.5 text-sm rounded-lg bg-brand-600 text-white hover:bg-brand-700 transition">
-          How to use
-        </button>
+        <button @click="showImport = true" class="px-3 py-1.5 text-sm rounded-lg border border-brand-200 hover:bg-brand-50 transition">Import JSON</button>
+        <button @click="exportJSON()" class="px-3 py-1.5 text-sm rounded-lg border border-brand-200 hover:bg-brand-50 transition">Export JSON</button>
+        <button @click="showHelp = true" class="px-3 py-1.5 text-sm rounded-lg bg-brand-600 text-white hover:bg-brand-700 transition">How to use</button>
       </div>
     </div>
   </header>
 
   <main class="max-w-7xl mx-auto px-4 sm:px-6 py-8">
-    <!-- Stats bar -->
     <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-8">
       <div class="bg-white rounded-xl p-4 border border-brand-100 shadow-sm">
         <p class="text-sm text-brand-500">Rooms</p>
@@ -84,11 +73,9 @@
       </div>
     </div>
 
-    <!-- Toolbar -->
     <div class="flex flex-wrap items-center justify-between gap-4 mb-6">
       <div class="flex items-center gap-2">
-        <input type="search" x-model="search" placeholder="Search rooms or finishes..." 
-               class="px-4 py-2 rounded-lg border border-brand-200 focus:outline-none focus:ring-2 focus:ring-brand-500 w-64 text-sm">
+        <input type="search" x-model="search" placeholder="Search rooms or finishes..." class="px-4 py-2 rounded-lg border border-brand-200 focus:outline-none focus:ring-2 focus:ring-brand-500 w-64 text-sm">
         <select x-model="statusFilter" class="px-3 py-2 rounded-lg border border-brand-200 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500">
           <option value="">All statuses</option>
           <option value="pending">Pending</option>
@@ -103,33 +90,26 @@
       </button>
     </div>
 
-    <!-- Rooms Grid -->
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5" x-show="!selectedRoom">
       <template x-for="room in filteredRooms" :key="room.id">
-        <div @click="selectRoom(room)" 
-             class="bg-white rounded-xl border border-brand-100 shadow-sm hover:shadow-md hover:border-brand-300 transition cursor-pointer overflow-hidden group">
+        <div @click="selectRoom(room)" class="bg-white rounded-xl border border-brand-100 shadow-sm hover:shadow-md hover:border-brand-300 transition cursor-pointer overflow-hidden group">
           <div class="p-5">
             <div class="flex items-start justify-between mb-3">
               <div>
                 <h2 class="font-semibold text-lg text-brand-900 group-hover:text-brand-600 transition" x-text="room.name"></h2>
                 <p class="text-xs text-brand-500 capitalize mt-0.5" x-text="room.type"></p>
               </div>
-              <span class="text-xs font-medium px-2 py-1 rounded-full"
-                    :class="roomProgress(room) === 100 ? 'bg-emerald-100 text-emerald-700' : 'bg-brand-100 text-brand-700'"
-                    x-text="roomProgress(room) + '%'"></span>
+              <span class="text-xs font-medium px-2 py-1 rounded-full" :class="roomProgress(room) === 100 ? 'bg-emerald-100 text-emerald-700' : 'bg-brand-100 text-brand-700'" x-text="roomProgress(room) + '%'"></span>
             </div>
             <div class="w-full bg-brand-100 rounded-full h-2 mb-3">
               <div class="bg-brand-600 h-2 rounded-full transition-all" :style="`width: ${roomProgress(room)}%`"></div>
             </div>
-            <p class="text-sm text-gray-500">
-              <span x-text="pickedInRoom(room)"></span> of <span x-text="room.finishes.length"></span> finishes picked
-            </p>
+            <p class="text-sm text-gray-500"><span x-text="pickedInRoom(room)"></span> of <span x-text="room.finishes.length"></span> finishes picked</p>
           </div>
         </div>
       </template>
     </div>
 
-    <!-- Room Detail -->
     <div x-show="selectedRoom" x-transition>
       <button @click="selectedRoom = null" class="mb-4 text-sm text-brand-600 hover:text-brand-800 flex items-center gap-1">
         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
@@ -152,11 +132,9 @@
         </div>
       </div>
 
-      <!-- Finishes Grid -->
       <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
         <template x-for="finish in filteredFinishes" :key="finish.id">
           <div class="bg-white rounded-xl border border-brand-100 shadow-sm overflow-hidden flex flex-col">
-            <!-- Image -->
             <div class="h-40 bg-brand-100 relative flex items-center justify-center overflow-hidden">
               <template x-if="finish.images && finish.images.length">
                 <img :src="toImageUrl(finish.images[0])" :alt="finish.name" class="w-full h-full object-cover" @error="$el.src=''; $el.classList.add('hidden')">
@@ -173,8 +151,7 @@
                       'bg-emerald-100 text-emerald-800': finish.status === 'picked',
                       'bg-blue-100 text-blue-800': finish.status === 'ordered',
                       'bg-purple-100 text-purple-800': finish.status === 'installed'
-                    }"
-                    x-text="finish.status"></span>
+                    }" x-text="finish.status"></span>
             </div>
             <div class="p-4 flex-1 flex flex-col">
               <h3 class="font-semibold text-brand-900" x-text="finish.name"></h3>
@@ -193,7 +170,7 @@
     </div>
   </main>
 
-  <!-- Add / Edit Room Modal -->
+  <!-- Modals and rest of the app remain the same as previous version with updated Help text -->
   <div x-show="showRoomModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40" x-transition.opacity>
     <div class="bg-white rounded-2xl shadow-xl w-full max-w-md p-6" @click.outside="showRoomModal = false">
       <h3 class="text-lg font-bold text-brand-900 mb-4" x-text="editingRoom ? 'Edit Room' : 'Add Room'"></h3>
@@ -232,7 +209,6 @@
     </div>
   </div>
 
-  <!-- Add / Edit Finish Modal -->
   <div x-show="showFinishModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40" x-transition.opacity>
     <div class="bg-white rounded-2xl shadow-xl w-full max-w-lg max-h-[90vh] overflow-y-auto p-6" @click.outside="showFinishModal = false">
       <h3 class="text-lg font-bold text-brand-900 mb-4" x-text="editingFinish ? 'Edit Finish' : 'Add Finish'"></h3>
@@ -279,10 +255,9 @@
         </div>
         <div>
           <label class="block text-sm font-medium text-gray-700 mb-1">Image URLs (Google Drive)</label>
-          <p class="text-xs text-gray-500 mb-2">Paste one URL per line. Use “Anyone with the link” sharing. The app will try to convert Drive links automatically.</p>
+          <p class="text-xs text-gray-500 mb-2">Paste one URL per line. Use “Anyone with the link” sharing.</p>
           <textarea x-model="finishForm.imagesText" rows="3" placeholder="https://drive.google.com/file/d/..." class="w-full px-3 py-2 border border-brand-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-500 font-mono text-sm"></textarea>
         </div>
-        <!-- Preview -->
         <div x-show="finishForm.imagesText.trim()" class="flex flex-wrap gap-2">
           <template x-for="(url, i) in previewImages" :key="i">
             <img :src="toImageUrl(url)" class="w-20 h-20 object-cover rounded-lg border" @error="$el.style.display='none'">
@@ -296,7 +271,6 @@
     </div>
   </div>
 
-  <!-- Import Modal -->
   <div x-show="showImport" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40" x-transition.opacity>
     <div class="bg-white rounded-2xl shadow-xl w-full max-w-md p-6" @click.outside="showImport = false">
       <h3 class="text-lg font-bold text-brand-900 mb-2">Import data.json</h3>
@@ -310,7 +284,6 @@
     </div>
   </div>
 
-  <!-- Help Modal -->
   <div x-show="showHelp" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40" x-transition.opacity>
     <div class="bg-white rounded-2xl shadow-xl w-full max-w-lg max-h-[90vh] overflow-y-auto p-6" @click.outside="showHelp = false">
       <h3 class="text-lg font-bold text-brand-900 mb-4">How to use Meekhouse Tracker</h3>
@@ -333,17 +306,23 @@
           </ol>
         </div>
         <div>
-          <h4 class="font-semibold text-brand-800">4. Saving your work permanently</h4>
-          <p>This is a static GitHub Pages site. Changes live in your browser until you export:</p>
+          <h4 class="font-semibold text-brand-800">4. Saving your work permanently (recommended)</h4>
+          <p>This is a static site, so permanent saves go through GitHub:</p>
           <ol class="list-decimal ml-5 space-y-1 mt-1">
-            <li>Click <strong>Export JSON</strong> — downloads an updated <code>data.json</code>.</li>
-            <li>Replace the <code>data.json</code> file in this GitHub repository with the new one.</li>
-            <li>Commit & push. Refresh the live site and your data is updated for everyone.</li>
+            <li>Click <strong>Export JSON</strong> and copy the contents of the downloaded file.</li>
+            <li>Go to the GitHub repo → <strong>Actions</strong> tab.</li>
+            <li>Select the workflow named <strong>Update data.json</strong>.</li>
+            <li>Click <strong>Run workflow</strong>, paste the JSON into the box, and run it.</li>
+            <li>After ~30 seconds refresh this page — your changes are live.</li>
           </ol>
-          <p class="mt-2 text-xs text-gray-500">You can also keep a local copy and re-import anytime.</p>
+          <p class="mt-2 text-xs text-gray-500">No passwords or tokens are stored in the website. The Action uses GitHub’s secure built-in token.</p>
         </div>
         <div>
-          <h4 class="font-semibold text-brand-800">5. GitHub Pages</h4>
+          <h4 class="font-semibold text-brand-800">5. Alternative manual method</h4>
+          <p>You can also download the JSON, replace <code>data.json</code> in the repo, and commit it yourself.</p>
+        </div>
+        <div>
+          <h4 class="font-semibold text-brand-800">6. GitHub Pages</h4>
           <p>If the site isn’t live yet: Repo → Settings → Pages → Source: Deploy from a branch → Branch: <code>main</code> / root → Save.</p>
         </div>
       </div>
@@ -353,7 +332,6 @@
     </div>
   </div>
 
-  <!-- Toast -->
   <div x-show="toast" x-transition.opacity class="fixed bottom-6 right-6 bg-brand-800 text-white px-5 py-3 rounded-xl shadow-lg text-sm z-50" x-text="toast"></div>
 
   <script>
@@ -378,31 +356,18 @@
         async init() {
           try {
             const res = await fetch('data.json?t=' + Date.now());
-            if (res.ok) {
-              this.data = await res.json();
-            } else {
-              this.showToast('Could not load data.json');
-            }
+            if (res.ok) this.data = await res.json();
+            else this.showToast('Could not load data.json');
           } catch (e) {
             this.showToast('Running offline – start with empty data or import');
             this.data = { rooms: [] };
           }
-          // Persist to localStorage as backup
-          this.$watch('data', (val) => {
-            localStorage.setItem('meekhouse-data', JSON.stringify(val));
-          }, { deep: true });
+          this.$watch('data', (val) => localStorage.setItem('meekhouse-data', JSON.stringify(val)), { deep: true });
         },
 
-        get totalFinishes() {
-          return this.data.rooms.reduce((sum, r) => sum + r.finishes.length, 0);
-        },
-        get pickedCount() {
-          return this.data.rooms.reduce((sum, r) => sum + r.finishes.filter(f => f.status !== 'pending').length, 0);
-        },
-        get progressPercent() {
-          if (this.totalFinishes === 0) return 0;
-          return Math.round((this.pickedCount / this.totalFinishes) * 100);
-        },
+        get totalFinishes() { return this.data.rooms.reduce((sum, r) => sum + r.finishes.length, 0); },
+        get pickedCount() { return this.data.rooms.reduce((sum, r) => sum + r.finishes.filter(f => f.status !== 'pending').length, 0); },
+        get progressPercent() { return this.totalFinishes === 0 ? 0 : Math.round((this.pickedCount / this.totalFinishes) * 100); },
         get filteredRooms() {
           const q = this.search.toLowerCase().trim();
           return this.data.rooms.filter(room => {
@@ -414,35 +379,21 @@
         get filteredFinishes() {
           if (!this.selectedRoom) return [];
           let list = this.selectedRoom.finishes;
-          if (this.statusFilter) {
-            list = list.filter(f => f.status === this.statusFilter);
-          }
+          if (this.statusFilter) list = list.filter(f => f.status === this.statusFilter);
           const q = this.search.toLowerCase().trim();
-          if (q) {
-            list = list.filter(f => f.name.toLowerCase().includes(q) || (f.value || '').toLowerCase().includes(q) || (f.notes || '').toLowerCase().includes(q));
-          }
+          if (q) list = list.filter(f => f.name.toLowerCase().includes(q) || (f.value || '').toLowerCase().includes(q) || (f.notes || '').toLowerCase().includes(q));
           return list;
         },
-        get previewImages() {
-          return this.finishForm.imagesText.split('\n').map(s => s.trim()).filter(Boolean);
-        },
+        get previewImages() { return this.finishForm.imagesText.split('\n').map(s => s.trim()).filter(Boolean); },
 
         roomProgress(room) {
           if (!room.finishes.length) return 0;
-          const done = room.finishes.filter(f => f.status !== 'pending').length;
-          return Math.round((done / room.finishes.length) * 100);
+          return Math.round((room.finishes.filter(f => f.status !== 'pending').length / room.finishes.length) * 100);
         },
-        pickedInRoom(room) {
-          return room.finishes.filter(f => f.status !== 'pending').length;
-        },
+        pickedInRoom(room) { return room.finishes.filter(f => f.status !== 'pending').length; },
 
-        selectRoom(room) {
-          this.selectedRoom = room;
-          this.search = '';
-          this.statusFilter = '';
-        },
+        selectRoom(room) { this.selectedRoom = room; this.search = ''; this.statusFilter = ''; },
 
-        // Room CRUD
         openAddRoom() {
           this.editingRoom = null;
           this.roomForm = { name: '', type: 'bedroom', notes: '', applyTemplate: true };
@@ -450,19 +401,11 @@
         },
         openEditRoom() {
           this.editingRoom = this.selectedRoom;
-          this.roomForm = {
-            name: this.selectedRoom.name,
-            type: this.selectedRoom.type,
-            notes: this.selectedRoom.notes || '',
-            applyTemplate: false
-          };
+          this.roomForm = { name: this.selectedRoom.name, type: this.selectedRoom.type, notes: this.selectedRoom.notes || '', applyTemplate: false };
           this.showRoomModal = true;
         },
         saveRoom() {
-          if (!this.roomForm.name.trim()) {
-            this.showToast('Room name is required');
-            return;
-          }
+          if (!this.roomForm.name.trim()) { this.showToast('Room name is required'); return; }
           if (this.editingRoom) {
             this.editingRoom.name = this.roomForm.name.trim();
             this.editingRoom.type = this.roomForm.type;
@@ -470,19 +413,12 @@
           } else {
             const id = this.slug(this.roomForm.name) + '-' + Date.now().toString(36);
             const finishes = this.roomForm.applyTemplate ? this.getTemplate(this.roomForm.type) : [];
-            this.data.rooms.push({
-              id,
-              name: this.roomForm.name.trim(),
-              type: this.roomForm.type,
-              notes: this.roomForm.notes,
-              finishes
-            });
+            this.data.rooms.push({ id, name: this.roomForm.name.trim(), type: this.roomForm.type, notes: this.roomForm.notes, finishes });
           }
           this.showRoomModal = false;
           this.showToast('Room saved');
         },
 
-        // Finish CRUD
         openAddFinish() {
           this.editingFinish = null;
           this.finishForm = { name: '', category: 'paint', value: '', notes: '', status: 'pending', imagesText: '' };
@@ -491,39 +427,24 @@
         openEditFinish(finish) {
           this.editingFinish = finish;
           this.finishForm = {
-            name: finish.name,
-            category: finish.category || 'other',
-            value: finish.value || '',
-            notes: finish.notes || '',
-            status: finish.status || 'pending',
-            imagesText: (finish.images || []).join('\n')
+            name: finish.name, category: finish.category || 'other', value: finish.value || '', notes: finish.notes || '',
+            status: finish.status || 'pending', imagesText: (finish.images || []).join('\n')
           };
           this.showFinishModal = true;
         },
         saveFinish() {
-          if (!this.finishForm.name.trim()) {
-            this.showToast('Finish name is required');
-            return;
-          }
+          if (!this.finishForm.name.trim()) { this.showToast('Finish name is required'); return; }
           const images = this.finishForm.imagesText.split('\n').map(s => s.trim()).filter(Boolean);
           if (this.editingFinish) {
             Object.assign(this.editingFinish, {
-              name: this.finishForm.name.trim(),
-              category: this.finishForm.category,
-              value: this.finishForm.value,
-              notes: this.finishForm.notes,
-              status: this.finishForm.status,
-              images
+              name: this.finishForm.name.trim(), category: this.finishForm.category, value: this.finishForm.value,
+              notes: this.finishForm.notes, status: this.finishForm.status, images
             });
           } else {
             this.selectedRoom.finishes.push({
               id: this.slug(this.finishForm.name) + '-' + Date.now().toString(36),
-              name: this.finishForm.name.trim(),
-              category: this.finishForm.category,
-              value: this.finishForm.value,
-              notes: this.finishForm.notes,
-              status: this.finishForm.status,
-              images
+              name: this.finishForm.name.trim(), category: this.finishForm.category, value: this.finishForm.value,
+              notes: this.finishForm.notes, status: this.finishForm.status, images
             });
           }
           this.showFinishModal = false;
@@ -536,22 +457,13 @@
           this.showToast('Finish deleted');
         },
 
-        // Helpers
-        slug(str) {
-          return str.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
-        },
+        slug(str) { return str.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, ''); },
         toImageUrl(url) {
           if (!url) return '';
-          // Convert Google Drive share links to direct view links
           const match = url.match(/\/file\/d\/([a-zA-Z0-9_-]+)/) || url.match(/[?&]id=([a-zA-Z0-9_-]+)/);
-          if (match) {
-            return `https://drive.google.com/uc?export=view&id=${match[1]}`;
-          }
-          // Also handle open?id= style
+          if (match) return `https://drive.google.com/uc?export=view&id=${match[1]}`;
           const openMatch = url.match(/open\?id=([a-zA-Z0-9_-]+)/);
-          if (openMatch) {
-            return `https://drive.google.com/uc?export=view&id=${openMatch[1]}`;
-          }
+          if (openMatch) return `https://drive.google.com/uc?export=view&id=${openMatch[1]}`;
           return url;
         },
         getTemplate(type) {
@@ -561,62 +473,17 @@
             { id: 'ceiling-paint', name: 'Ceiling Paint', category: 'paint' }
           ];
           const templates = {
-            bedroom: [...common,
-              { id: 'flooring', name: 'Flooring', category: 'flooring' },
-              { id: 'lighting', name: 'Lighting', category: 'lighting' },
-              { id: 'hardware', name: 'Door Hardware', category: 'hardware' }
-            ],
-            bathroom: [...common,
-              { id: 'floor-tile', name: 'Floor Tile', category: 'tile' },
-              { id: 'shower-tile', name: 'Shower Tile / Surround', category: 'tile' },
-              { id: 'vanity', name: 'Vanity', category: 'cabinet' },
-              { id: 'vanity-top', name: 'Vanity Top', category: 'surface' },
-              { id: 'mirror', name: 'Mirror', category: 'fixture' },
-              { id: 'lighting', name: 'Lighting', category: 'lighting' },
-              { id: 'faucet', name: 'Faucet', category: 'plumbing' },
-              { id: 'toilet', name: 'Toilet', category: 'plumbing' },
-              { id: 'hardware', name: 'Hardware', category: 'hardware' }
-            ],
-            kitchen: [...common,
-              { id: 'cabinets', name: 'Cabinets', category: 'cabinet' },
-              { id: 'countertops', name: 'Countertops', category: 'surface' },
-              { id: 'backsplash', name: 'Backsplash', category: 'tile' },
-              { id: 'flooring', name: 'Flooring', category: 'flooring' },
-              { id: 'sink-faucet', name: 'Sink & Faucet', category: 'plumbing' },
-              { id: 'lighting', name: 'Lighting', category: 'lighting' },
-              { id: 'hardware', name: 'Cabinet Hardware', category: 'hardware' }
-            ],
-            living: [...common,
-              { id: 'flooring', name: 'Flooring', category: 'flooring' },
-              { id: 'lighting', name: 'Lighting', category: 'lighting' }
-            ],
-            dining: [...common,
-              { id: 'flooring', name: 'Flooring', category: 'flooring' },
-              { id: 'lighting', name: 'Lighting', category: 'lighting' }
-            ],
-            office: [...common,
-              { id: 'flooring', name: 'Flooring', category: 'flooring' },
-              { id: 'lighting', name: 'Lighting', category: 'lighting' }
-            ],
-            bonus: [...common,
-              { id: 'flooring', name: 'Flooring', category: 'flooring' },
-              { id: 'lighting', name: 'Lighting', category: 'lighting' }
-            ],
-            garage: [
-              { id: 'wall-paint', name: 'Wall Paint / Finish', category: 'paint' },
-              { id: 'flooring', name: 'Floor Coating', category: 'flooring' },
-              { id: 'lighting', name: 'Lighting', category: 'lighting' }
-            ]
+            bedroom: [...common, { id: 'flooring', name: 'Flooring', category: 'flooring' }, { id: 'lighting', name: 'Lighting', category: 'lighting' }, { id: 'hardware', name: 'Door Hardware', category: 'hardware' }],
+            bathroom: [...common, { id: 'floor-tile', name: 'Floor Tile', category: 'tile' }, { id: 'shower-tile', name: 'Shower Tile / Surround', category: 'tile' }, { id: 'vanity', name: 'Vanity', category: 'cabinet' }, { id: 'vanity-top', name: 'Vanity Top', category: 'surface' }, { id: 'mirror', name: 'Mirror', category: 'fixture' }, { id: 'lighting', name: 'Lighting', category: 'lighting' }, { id: 'faucet', name: 'Faucet', category: 'plumbing' }, { id: 'toilet', name: 'Toilet', category: 'plumbing' }, { id: 'hardware', name: 'Hardware', category: 'hardware' }],
+            kitchen: [...common, { id: 'cabinets', name: 'Cabinets', category: 'cabinet' }, { id: 'countertops', name: 'Countertops', category: 'surface' }, { id: 'backsplash', name: 'Backsplash', category: 'tile' }, { id: 'flooring', name: 'Flooring', category: 'flooring' }, { id: 'sink-faucet', name: 'Sink & Faucet', category: 'plumbing' }, { id: 'lighting', name: 'Lighting', category: 'lighting' }, { id: 'hardware', name: 'Cabinet Hardware', category: 'hardware' }],
+            living: [...common, { id: 'flooring', name: 'Flooring', category: 'flooring' }, { id: 'lighting', name: 'Lighting', category: 'lighting' }],
+            dining: [...common, { id: 'flooring', name: 'Flooring', category: 'flooring' }, { id: 'lighting', name: 'Lighting', category: 'lighting' }],
+            office: [...common, { id: 'flooring', name: 'Flooring', category: 'flooring' }, { id: 'lighting', name: 'Lighting', category: 'lighting' }],
+            bonus: [...common, { id: 'flooring', name: 'Flooring', category: 'flooring' }, { id: 'lighting', name: 'Lighting', category: 'lighting' }],
+            garage: [{ id: 'wall-paint', name: 'Wall Paint / Finish', category: 'paint' }, { id: 'flooring', name: 'Floor Coating', category: 'flooring' }, { id: 'lighting', name: 'Lighting', category: 'lighting' }]
           };
           const list = templates[type] || common;
-          return list.map(item => ({
-            ...item,
-            id: item.id + '-' + Date.now().toString(36) + Math.random().toString(36).slice(2, 5),
-            value: '',
-            notes: '',
-            status: 'pending',
-            images: []
-          }));
+          return list.map(item => ({ ...item, id: item.id + '-' + Date.now().toString(36) + Math.random().toString(36).slice(2, 5), value: '', notes: '', status: 'pending', images: [] }));
         },
 
         exportJSON() {
@@ -627,15 +494,13 @@
           a.download = 'data.json';
           a.click();
           URL.revokeObjectURL(url);
-          this.showToast('data.json downloaded – replace the file in your GitHub repo');
+          this.showToast('data.json downloaded – use the GitHub Action to publish it');
         },
         handleFileImport(e) {
           const file = e.target.files[0];
           if (!file) return;
           const reader = new FileReader();
-          reader.onload = (ev) => {
-            this.importText = ev.target.result;
-          };
+          reader.onload = (ev) => { this.importText = ev.target.result; };
           reader.readAsText(file);
         },
         doImport() {
