@@ -1,0 +1,229 @@
+{
+  "version": 1,
+  "lastUpdated": "2026-08-16",
+  "rooms": [
+    {
+      "id": "primary-bedroom",
+      "name": "Primary Bedroom",
+      "type": "bedroom",
+      "notes": "",
+      "finishes": [
+        {"id": "wall-paint", "name": "Wall Paint", "category": "paint", "value": "", "notes": "", "status": "pending", "images": []},
+        {"id": "trim-paint", "name": "Trim Paint", "category": "paint", "value": "", "notes": "", "status": "pending", "images": []},
+        {"id": "ceiling-paint", "name": "Ceiling Paint", "category": "paint", "value": "", "notes": "", "status": "pending", "images": []},
+        {"id": "flooring", "name": "Flooring", "category": "flooring", "value": "", "notes": "", "status": "pending", "images": []},
+        {"id": "lighting", "name": "Lighting / Ceiling Fan", "category": "lighting", "value": "", "notes": "", "status": "pending", "images": []},
+        {"id": "hardware", "name": "Door Hardware", "category": "hardware", "value": "", "notes": "", "status": "pending", "images": []}
+      ]
+    },
+    {
+      "id": "bedroom-2",
+      "name": "Bedroom 2",
+      "type": "bedroom",
+      "notes": "",
+      "finishes": [
+        {"id": "wall-paint", "name": "Wall Paint", "category": "paint", "value": "", "notes": "", "status": "pending", "images": []},
+        {"id": "trim-paint", "name": "Trim Paint", "category": "paint", "value": "", "notes": "", "status": "pending", "images": []},
+        {"id": "ceiling-paint", "name": "Ceiling Paint", "category": "paint", "value": "", "notes": "", "status": "pending", "images": []},
+        {"id": "flooring", "name": "Flooring", "category": "flooring", "value": "", "notes": "", "status": "pending", "images": []},
+        {"id": "lighting", "name": "Lighting", "category": "lighting", "value": "", "notes": "", "status": "pending", "images": []},
+        {"id": "hardware", "name": "Door Hardware", "category": "hardware", "value": "", "notes": "", "status": "pending", "images": []}
+      ]
+    },
+    {
+      "id": "bedroom-3",
+      "name": "Bedroom 3",
+      "type": "bedroom",
+      "notes": "",
+      "finishes": [
+        {"id": "wall-paint", "name": "Wall Paint", "category": "paint", "value": "", "notes": "", "status": "pending", "images": []},
+        {"id": "trim-paint", "name": "Trim Paint", "category": "paint", "value": "", "notes": "", "status": "pending", "images": []},
+        {"id": "ceiling-paint", "name": "Ceiling Paint", "category": "paint", "value": "", "notes": "", "status": "pending", "images": []},
+        {"id": "flooring", "name": "Flooring", "category": "flooring", "value": "", "notes": "", "status": "pending", "images": []},
+        {"id": "lighting", "name": "Lighting", "category": "lighting", "value": "", "notes": "", "status": "pending", "images": []},
+        {"id": "hardware", "name": "Door Hardware", "category": "hardware", "value": "", "notes": "", "status": "pending", "images": []}
+      ]
+    },
+    {
+      "id": "bedroom-4",
+      "name": "Bedroom 4",
+      "type": "bedroom",
+      "notes": "",
+      "finishes": [
+        {"id": "wall-paint", "name": "Wall Paint", "category": "paint", "value": "", "notes": "", "status": "pending", "images": []},
+        {"id": "trim-paint", "name": "Trim Paint", "category": "paint", "value": "", "notes": "", "status": "pending", "images": []},
+        {"id": "ceiling-paint", "name": "Ceiling Paint", "category": "paint", "value": "", "notes": "", "status": "pending", "images": []},
+        {"id": "flooring", "name": "Flooring", "category": "flooring", "value": "", "notes": "", "status": "pending", "images": []},
+        {"id": "lighting", "name": "Lighting", "category": "lighting", "value": "", "notes": "", "status": "pending", "images": []},
+        {"id": "hardware", "name": "Door Hardware", "category": "hardware", "value": "", "notes": "", "status": "pending", "images": []}
+      ]
+    },
+    {
+      "id": "primary-bath",
+      "name": "Primary Bathroom",
+      "type": "bathroom",
+      "notes": "",
+      "finishes": [
+        {"id": "wall-paint", "name": "Wall Paint", "category": "paint", "value": "", "notes": "", "status": "pending", "images": []},
+        {"id": "trim-paint", "name": "Trim Paint", "category": "paint", "value": "", "notes": "", "status": "pending", "images": []},
+        {"id": "ceiling-paint", "name": "Ceiling Paint", "category": "paint", "value": "", "notes": "", "status": "pending", "images": []},
+        {"id": "floor-tile", "name": "Floor Tile", "category": "tile", "value": "", "notes": "", "status": "pending", "images": []},
+        {"id": "shower-tile", "name": "Shower Tile / Surround", "category": "tile", "value": "", "notes": "", "status": "pending", "images": []},
+        {"id": "vanity", "name": "Vanity", "category": "cabinet", "value": "", "notes": "", "status": "pending", "images": []},
+        {"id": "vanity-top", "name": "Vanity Top / Counter", "category": "surface", "value": "", "notes": "", "status": "pending", "images": []},
+        {"id": "mirror", "name": "Mirror", "category": "fixture", "value": "", "notes": "", "status": "pending", "images": []},
+        {"id": "lighting", "name": "Lighting", "category": "lighting", "value": "", "notes": "", "status": "pending", "images": []},
+        {"id": "faucet", "name": "Faucet / Plumbing Fixtures", "category": "plumbing", "value": "", "notes": "", "status": "pending", "images": []},
+        {"id": "toilet", "name": "Toilet", "category": "plumbing", "value": "", "notes": "", "status": "pending", "images": []},
+        {"id": "hardware", "name": "Hardware (Towel bars, etc.)", "category": "hardware", "value": "", "notes": "", "status": "pending", "images": []},
+        {"id": "shower-system", "name": "Shower System / Head", "category": "plumbing", "value": "", "notes": "", "status": "pending", "images": []}
+      ]
+    },
+    {
+      "id": "bath-2",
+      "name": "Bathroom 2",
+      "type": "bathroom",
+      "notes": "",
+      "finishes": [
+        {"id": "wall-paint", "name": "Wall Paint", "category": "paint", "value": "", "notes": "", "status": "pending", "images": []},
+        {"id": "trim-paint", "name": "Trim Paint", "category": "paint", "value": "", "notes": "", "status": "pending", "images": []},
+        {"id": "ceiling-paint", "name": "Ceiling Paint", "category": "paint", "value": "", "notes": "", "status": "pending", "images": []},
+        {"id": "floor-tile", "name": "Floor Tile", "category": "tile", "value": "", "notes": "", "status": "pending", "images": []},
+        {"id": "shower-tile", "name": "Shower / Tub Surround", "category": "tile", "value": "", "notes": "", "status": "pending", "images": []},
+        {"id": "vanity", "name": "Vanity", "category": "cabinet", "value": "", "notes": "", "status": "pending", "images": []},
+        {"id": "vanity-top", "name": "Vanity Top", "category": "surface", "value": "", "notes": "", "status": "pending", "images": []},
+        {"id": "mirror", "name": "Mirror", "category": "fixture", "value": "", "notes": "", "status": "pending", "images": []},
+        {"id": "lighting", "name": "Lighting", "category": "lighting", "value": "", "notes": "", "status": "pending", "images": []},
+        {"id": "faucet", "name": "Faucet", "category": "plumbing", "value": "", "notes": "", "status": "pending", "images": []},
+        {"id": "toilet", "name": "Toilet", "category": "plumbing", "value": "", "notes": "", "status": "pending", "images": []},
+        {"id": "hardware", "name": "Hardware", "category": "hardware", "value": "", "notes": "", "status": "pending", "images": []}
+      ]
+    },
+    {
+      "id": "bath-3",
+      "name": "Bathroom 3",
+      "type": "bathroom",
+      "notes": "",
+      "finishes": [
+        {"id": "wall-paint", "name": "Wall Paint", "category": "paint", "value": "", "notes": "", "status": "pending", "images": []},
+        {"id": "trim-paint", "name": "Trim Paint", "category": "paint", "value": "", "notes": "", "status": "pending", "images": []},
+        {"id": "ceiling-paint", "name": "Ceiling Paint", "category": "paint", "value": "", "notes": "", "status": "pending", "images": []},
+        {"id": "floor-tile", "name": "Floor Tile", "category": "tile", "value": "", "notes": "", "status": "pending", "images": []},
+        {"id": "shower-tile", "name": "Shower / Tub Surround", "category": "tile", "value": "", "notes": "", "status": "pending", "images": []},
+        {"id": "vanity", "name": "Vanity", "category": "cabinet", "value": "", "notes": "", "status": "pending", "images": []},
+        {"id": "vanity-top", "name": "Vanity Top", "category": "surface", "value": "", "notes": "", "status": "pending", "images": []},
+        {"id": "mirror", "name": "Mirror", "category": "fixture", "value": "", "notes": "", "status": "pending", "images": []},
+        {"id": "lighting", "name": "Lighting", "category": "lighting", "value": "", "notes": "", "status": "pending", "images": []},
+        {"id": "faucet", "name": "Faucet", "category": "plumbing", "value": "", "notes": "", "status": "pending", "images": []},
+        {"id": "toilet", "name": "Toilet", "category": "plumbing", "value": "", "notes": "", "status": "pending", "images": []},
+        {"id": "hardware", "name": "Hardware", "category": "hardware", "value": "", "notes": "", "status": "pending", "images": []}
+      ]
+    },
+    {
+      "id": "bath-4",
+      "name": "Bathroom 4",
+      "type": "bathroom",
+      "notes": "",
+      "finishes": [
+        {"id": "wall-paint", "name": "Wall Paint", "category": "paint", "value": "", "notes": "", "status": "pending", "images": []},
+        {"id": "trim-paint", "name": "Trim Paint", "category": "paint", "value": "", "notes": "", "status": "pending", "images": []},
+        {"id": "ceiling-paint", "name": "Ceiling Paint", "category": "paint", "value": "", "notes": "", "status": "pending", "images": []},
+        {"id": "floor-tile", "name": "Floor Tile", "category": "tile", "value": "", "notes": "", "status": "pending", "images": []},
+        {"id": "shower-tile", "name": "Shower / Tub Surround", "category": "tile", "value": "", "notes": "", "status": "pending", "images": []},
+        {"id": "vanity", "name": "Vanity", "category": "cabinet", "value": "", "notes": "", "status": "pending", "images": []},
+        {"id": "vanity-top", "name": "Vanity Top", "category": "surface", "value": "", "notes": "", "status": "pending", "images": []},
+        {"id": "mirror", "name": "Mirror", "category": "fixture", "value": "", "notes": "", "status": "pending", "images": []},
+        {"id": "lighting", "name": "Lighting", "category": "lighting", "value": "", "notes": "", "status": "pending", "images": []},
+        {"id": "faucet", "name": "Faucet", "category": "plumbing", "value": "", "notes": "", "status": "pending", "images": []},
+        {"id": "toilet", "name": "Toilet", "category": "plumbing", "value": "", "notes": "", "status": "pending", "images": []},
+        {"id": "hardware", "name": "Hardware", "category": "hardware", "value": "", "notes": "", "status": "pending", "images": []}
+      ]
+    },
+    {
+      "id": "bonus-room",
+      "name": "Bonus Room",
+      "type": "bonus",
+      "notes": "",
+      "finishes": [
+        {"id": "wall-paint", "name": "Wall Paint", "category": "paint", "value": "", "notes": "", "status": "pending", "images": []},
+        {"id": "trim-paint", "name": "Trim Paint", "category": "paint", "value": "", "notes": "", "status": "pending", "images": []},
+        {"id": "ceiling-paint", "name": "Ceiling Paint", "category": "paint", "value": "", "notes": "", "status": "pending", "images": []},
+        {"id": "flooring", "name": "Flooring", "category": "flooring", "value": "", "notes": "", "status": "pending", "images": []},
+        {"id": "lighting", "name": "Lighting", "category": "lighting", "value": "", "notes": "", "status": "pending", "images": []}
+      ]
+    },
+    {
+      "id": "living-room",
+      "name": "Living Room",
+      "type": "living",
+      "notes": "",
+      "finishes": [
+        {"id": "wall-paint", "name": "Wall Paint", "category": "paint", "value": "", "notes": "", "status": "pending", "images": []},
+        {"id": "trim-paint", "name": "Trim Paint", "category": "paint", "value": "", "notes": "", "status": "pending", "images": []},
+        {"id": "ceiling-paint", "name": "Ceiling Paint", "category": "paint", "value": "", "notes": "", "status": "pending", "images": []},
+        {"id": "flooring", "name": "Flooring", "category": "flooring", "value": "", "notes": "", "status": "pending", "images": []},
+        {"id": "lighting", "name": "Lighting", "category": "lighting", "value": "", "notes": "", "status": "pending", "images": []},
+        {"id": "fireplace", "name": "Fireplace Surround / Mantel", "category": "feature", "value": "", "notes": "", "status": "pending", "images": []}
+      ]
+    },
+    {
+      "id": "dining-room",
+      "name": "Dining Room",
+      "type": "dining",
+      "notes": "",
+      "finishes": [
+        {"id": "wall-paint", "name": "Wall Paint", "category": "paint", "value": "", "notes": "", "status": "pending", "images": []},
+        {"id": "trim-paint", "name": "Trim Paint", "category": "paint", "value": "", "notes": "", "status": "pending", "images": []},
+        {"id": "ceiling-paint", "name": "Ceiling Paint", "category": "paint", "value": "", "notes": "", "status": "pending", "images": []},
+        {"id": "flooring", "name": "Flooring", "category": "flooring", "value": "", "notes": "", "status": "pending", "images": []},
+        {"id": "lighting", "name": "Lighting (Chandelier / Fixture)", "category": "lighting", "value": "", "notes": "", "status": "pending", "images": []}
+      ]
+    },
+    {
+      "id": "kitchen",
+      "name": "Kitchen",
+      "type": "kitchen",
+      "notes": "",
+      "finishes": [
+        {"id": "wall-paint", "name": "Wall Paint", "category": "paint", "value": "", "notes": "", "status": "pending", "images": []},
+        {"id": "trim-paint", "name": "Trim Paint", "category": "paint", "value": "", "notes": "", "status": "pending", "images": []},
+        {"id": "ceiling-paint", "name": "Ceiling Paint", "category": "paint", "value": "", "notes": "", "status": "pending", "images": []},
+        {"id": "cabinets", "name": "Cabinets", "category": "cabinet", "value": "", "notes": "", "status": "pending", "images": []},
+        {"id": "countertops", "name": "Countertops", "category": "surface", "value": "", "notes": "", "status": "pending", "images": []},
+        {"id": "backsplash", "name": "Backsplash", "category": "tile", "value": "", "notes": "", "status": "pending", "images": []},
+        {"id": "flooring", "name": "Flooring", "category": "flooring", "value": "", "notes": "", "status": "pending", "images": []},
+        {"id": "sink-faucet", "name": "Sink & Faucet", "category": "plumbing", "value": "", "notes": "", "status": "pending", "images": []},
+        {"id": "lighting", "name": "Lighting", "category": "lighting", "value": "", "notes": "", "status": "pending", "images": []},
+        {"id": "hardware", "name": "Cabinet Hardware", "category": "hardware", "value": "", "notes": "", "status": "pending", "images": []},
+        {"id": "appliances", "name": "Appliances (notes)", "category": "appliance", "value": "", "notes": "", "status": "pending", "images": []}
+      ]
+    },
+    {
+      "id": "office",
+      "name": "Office",
+      "type": "office",
+      "notes": "",
+      "finishes": [
+        {"id": "wall-paint", "name": "Wall Paint", "category": "paint", "value": "", "notes": "", "status": "pending", "images": []},
+        {"id": "trim-paint", "name": "Trim Paint", "category": "paint", "value": "", "notes": "", "status": "pending", "images": []},
+        {"id": "ceiling-paint", "name": "Ceiling Paint", "category": "paint", "value": "", "notes": "", "status": "pending", "images": []},
+        {"id": "flooring", "name": "Flooring", "category": "flooring", "value": "", "notes": "", "status": "pending", "images": []},
+        {"id": "lighting", "name": "Lighting", "category": "lighting", "value": "", "notes": "", "status": "pending", "images": []},
+        {"id": "built-ins", "name": "Built-ins / Desk", "category": "feature", "value": "", "notes": "", "status": "pending", "images": []}
+      ]
+    },
+    {
+      "id": "garage",
+      "name": "Garage",
+      "type": "garage",
+      "notes": "",
+      "finishes": [
+        {"id": "wall-paint", "name": "Wall Paint / Finish", "category": "paint", "value": "", "notes": "", "status": "pending", "images": []},
+        {"id": "flooring", "name": "Floor Coating / Epoxy", "category": "flooring", "value": "", "notes": "", "status": "pending", "images": []},
+        {"id": "lighting", "name": "Lighting", "category": "lighting", "value": "", "notes": "", "status": "pending", "images": []},
+        {"id": "door", "name": "Garage Door", "category": "door", "value": "", "notes": "", "status": "pending", "images": []},
+        {"id": "storage", "name": "Storage / Cabinets", "category": "storage", "value": "", "notes": "", "status": "pending", "images": []}
+      ]
+    }
+  ]
+}
