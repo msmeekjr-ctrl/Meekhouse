@@ -1,0 +1,70 @@
+name: Update data.json
+
+on:
+  workflow_dispatch:
+    inputs:
+      json_content:
+        description: 'Paste the full contents of the exported data.json here'
+        required: true
+        type: string
+
+permissions:
+  contents: write
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Validate and write data.json
+        run: |
+          # Write the input to a temporary file
+          cat > /tmp/new-data.json << 'EOF'
+          ${{ inputs.json_content }}
+          EOF
+
+          # Basic validation – must be valid JSON and contain a "rooms" array
+          if ! python3 -c "
+          import json, sys
+          try:
+              data = json.load(open('/tmp/new-data.json'))
+              if not isinstance(data.get('rooms'), list):
+                  print('Error: JSON must contain a top-level \"rooms\" array')
+                  sys.exit(1)
+              print('JSON is valid and contains rooms array')
+          except Exception as e:
+              print(f'Invalid JSON: {e}')
+              sys.exit(1)
+          "; then
+            echo "Validation failed"
+            exit 1
+          fi
+
+          # Pretty-print and replace the file
+          python3 -c "
+          import json
+          data = json.load(open('/tmp/new-data.json'))
+          with open('data.json', 'w') as f:
+              json.dump(data, f, indent=2)
+              f.write('\n')
+          "
+          echo "data.json updated successfully"
+
+      - name: Commit and push changes
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          git add data.json
+
+          if git diff --staged --quiet; then
+            echo "No changes detected in data.json"
+            exit 0
+          fi
+
+          git commit -m "Update finishes data via GitHub Action
+
+          Triggered by workflow_dispatch"
+          git push
