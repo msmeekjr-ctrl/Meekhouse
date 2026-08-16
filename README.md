@@ -13,7 +13,8 @@ A simple, free static website to organize and track all the final finishes for y
 - Image support via Google Drive links
 - Search & filter
 - Progress overview
-- Export / Import JSON so you stay in control of the data
+- Export / Import JSON
+- **Secure one-click update via GitHub Action** (no tokens in the website)
 
 ## Quick start (GitHub Pages)
 
@@ -23,14 +24,29 @@ A simple, free static website to organize and track all the final finishes for y
 4. Select branch **main** and folder **/ (root)**.
 5. Click Save. After a minute the site will be live.
 
-## How to update your data
+## How to update your data (recommended method)
 
-Because this is a free static site (no server), permanent changes go through the JSON file:
+Because this is a free static site, permanent changes go through `data.json`. The safest way is the GitHub Action:
 
-1. Make edits in the live website (they are stored temporarily in your browser).
-2. Click **Export JSON** — this downloads a fresh `data.json`.
-3. In this GitHub repo, replace the existing `data.json` with the new file.
-4. Commit and push. Refresh the site.
+### Using the GitHub Action (recommended)
+
+1. Make your edits in the live website.
+2. Click **Export JSON** and open the downloaded file (or just copy its contents).
+3. Go to the repository → **Actions** tab.
+4. In the left sidebar click **Update data.json**.
+5. Click the **Run workflow** button.
+6. Paste the entire contents of your exported `data.json` into the input box.
+7. Click **Run workflow**.
+8. Wait ~20–30 seconds. The Action will validate the JSON, update the file, and push it to `main`.
+9. Refresh the live site — your changes are now live.
+
+No personal access token is stored anywhere in the website or in the repository. The Action uses GitHub’s built-in token with only the permissions it needs.
+
+### Alternative: Manual file replace
+
+1. Export JSON from the site.
+2. In the repo, replace the existing `data.json` with the new file.
+3. Commit and push.
 
 You can also keep the exported file as a local backup and re-import it anytime with the **Import JSON** button.
 
@@ -59,6 +75,7 @@ npx serve .
 - Pure HTML + Tailwind CSS (CDN) + Alpine.js
 - No build step, no backend, works on free GitHub Pages
 - All data lives in `data.json`
+- Updates via GitHub Actions (`workflow_dispatch`)
 
 ---
 
